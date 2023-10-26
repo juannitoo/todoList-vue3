@@ -1,15 +1,45 @@
 <template>
+
+  <h1>Todo list</h1>
   <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+  <TodoForm @add="saveThings" />
+
+  <h3>{{ thingsToDo.length }} chose{{ thingsToDo.length > 1 ? "s" : ""  }} à faire</h3>
+  
+  <TodoList 
+    :thingsToDo="thingsToDo" 
+    @delete-thing="deleteThing"
+    @edit-thing="editThing"
+  />
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import { ref } from 'vue';
+import TodoForm from './components/Todo-form.vue';
+import TodoList from './components/Todo-list.vue';
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TodoForm, 
+    TodoList
+  },
+  setup(){
+    let thingsToDo = ref([]);
+    const saveThings = function(data){
+      thingsToDo.value.push({thing: data, id: Date.now()})
+    };
+    const deleteThing = function(thing){
+      thingsToDo.value = thingsToDo.value.filter(t => t.id !== thing.id )
+    };
+    const editThing = function(thing){
+      let thingIndex = thingsToDo.value.indexOf(thing)
+      thingsToDo.value.splice(thingIndex, 1, thing)
+    };
+    return{
+      saveThings, thingsToDo, deleteThing, editThing
+    };
   }
 }
 </script>
